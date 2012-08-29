@@ -14,7 +14,7 @@ Connect to the Bluetooth Mate using a serial monitor program. (Picocom is a good
 
 In order to program the arduino, it has to be reset when the upload starts. To do this we first need to add a reset switch on the arduino board. Use a NPN transistor and connect it in the following way:
 
-![Reset Switch on Breadboard](/doc/reset_curcuit.png)
+![Reset Switch on Breadboard](https://raw.github.com/eggerdo/arduino_blue/master/doc/reset_circuit.png)
 
 1. Connect the collector to the reset pin on the arduino (example: blue wire connects to pin RST)
 2. Connect the base to any output pin on the arduino (example: orange wire connects to pin 5)

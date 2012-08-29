@@ -6,13 +6,14 @@ Many of you may have wondered already if it's not possible to program an arduino
 
 # Step 1: Bluetooth Mate Settings
 
-First thing you need to do is change the baud rate of the Bluetooth mate to 57600 as this is the speed it takes to upload your program. 
+First thing you need to do is change the baud rate of the Bluetooth Mate to 57600 as this is the speed it takes to upload your program. 
 
 Connect to the Bluetooth Mate using a serial monitor program. (Picocom is a good choice as we will use that later on). Once connected, put the Bluetooth Mate into command mode by sending `$$$` (needs to be done withing 60 seconds of power on). The Mate will answer with `CMD`. Then change the baud rate to 57600 by sending `SU57`. The Mate will answer with `OK`. By typing `D` you can confirm the settings.
 
 # Step 2: Arduino Reset circuit
 
-In order to program the arduino, it has to be reset when the upload starts. To do this we first need to put a reset switch on the arduino board. Use a NPN transistor and connect it in the following way:
+In order to program the arduino, it has to be reset when the upload starts. To do this we first need to add a reset switch on the arduino board. Use a NPN transistor and connect it in the following way:
+
 1. Connect the collector to the reset pin on the arduino (example: blue wire connects to pin RST)
 2. Connect the base to any output pin on the arduino (example: orange wire connects to pin 5)
 3. Connect the emitter to the ground
@@ -38,7 +39,7 @@ With this ready we now need to put a piece of code in the arduino program that l
 	  digitalWrite(bootpin, HIGH);
 	}
 
-And don't forget to set `Serial.begin(57600);` in your setup routine. 
+Call the function `ReadSerialInput();` from your loop and don't forget to set `Serial.begin(57600);` in your setup routine. 
 
 # Step 3: Upload Program
 

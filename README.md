@@ -64,11 +64,11 @@ E.g.
 
 ## connect.sh
 
-The script `connect.sh` is used to connect to the Bluetooth Mate. It expects the MAC address or the Device Name as a parameter. Once the connection is estables the scripts exits, if no connection can be established the script fails with an error message. 
+The script `connect.sh` is used to connect to the Bluetooth Mate. It expects the MAC address as a parameter. Once the connection is established the scripts exits, if no connection can be established the script fails with an error message. 
 
 ## upload.sh
 
-`upload.sh` is used to upload a new sketch to the arduino. It expects the MAC address or the Device Name as a parameter. (Alternatively you can write the address also in a file called arduino_ip.txt located in the same folder as the script)
+`upload.sh` is used to upload a new sketch to the arduino. It expects the MAC address as a parameter. (Alternatively you can write the address also in a file called arduino_ip.txt located in the same folder as the script)
 
 E.g.
 

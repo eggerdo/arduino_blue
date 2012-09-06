@@ -29,7 +29,7 @@ if [[ -z $go_on ]]; then
 	sudo rfcomm release all > /dev/null
 
 	# start rfcomm connect in another shell
-	sudo rfcomm connect $1 > /dev/null &
+	sudo rfcomm connect /dev/rfcomm0 $1 > /dev/null &
 else 
 	print "-> already connected" $GREEN
 fi

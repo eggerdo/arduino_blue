@@ -93,3 +93,7 @@ The same can also be achieved with `serial.sh`. It takes the same arguments as `
 E.g.
 
 	./serial.sh -t RN42-B746
+
+# Program Arduino with Eclipse
+
+For those who are interested, I also wrote a tutorial on how to set up eclipse in order to program an arduino. The tutorial includes the installation of the arduino plugin, building a sketch with ino and uploading the program with the scripts mentioned above and can be found [here](https://raw.github.com/eggerdo/arduino_blue/master/doc/ProgramArduinowithEclipse.pdf).

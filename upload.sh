@@ -7,6 +7,7 @@ RED="\033[38;5;196m"
 
 SERIAL=false
 KEEP_ALIVE=false
+PORTNR=0
 
 # print function, first parameter is the string, second parameter the colour.
 # colour is optional
@@ -26,10 +27,16 @@ function showUsage {
 	echo
 	echo -e "    -t <target>      specify the target either as the bluetooth"
 	echo -e "                     MAC address or the name of the device"
+	echo -e "    -p               define the port number on which the connection"
+	echo -e "                     should be established. default is 0"
+	echo -e "                     Note: only specify the number, e.g. 0 and not"
+	echo -e "                     /dev/rfcomm0"
 	echo -e "    -f               similar to -t but specify a file in which"
 	echo -e "                     the target is defined"
 	echo -e "    -s               starts the serial monitor once upload has"
 	echo -e "                     successfully completed"
+	echo -e "    -k               keeps the connection alive even after the script"
+	echo -e "                     has completed"
 	echo
 	echo -e "Note:"
 	echo -e "If no target is defined, the file 'arduino_ip.txt' is checked by default."
@@ -40,10 +47,13 @@ function showUsage {
 hash ino 2>/dev/null || { print "FATAL: Ino required for execution. See http://inotool.org/  Aborting." $RED; exit 1; }
 
 # check for option arguments
-while getopts ":t:sf:k" optname; do
+while getopts ":t:sf:kp:" optname; do
 	case "$optname" in
 		"t")
 			TARGET=$OPTARG
+			;;
+		"p")
+			PORTNR=$OPTARG
 			;;
 		"s")
 			SERIAL=true
@@ -61,7 +71,7 @@ while getopts ":t:sf:k" optname; do
 			exit
 			;;
 		*)
-			print "Unknown error while processing options" $RED
+			print "Unknown error while processing options, use -? for usage information" $RED
 	esac
 done
 
@@ -79,10 +89,10 @@ if [ -z $TARGET ]; then
 	fi
 fi
 
-# connect to the robot
-. ./connect.sh $TARGET
+PORT=/dev/rfcomm$PORTNR
 
-print "-> connection ok" $GREEN
+# connect to the robot
+. ./connect.sh $TARGET $PORTNR
 
 # build the sketch with ino
 print "build sketch ..." $ORANGE
@@ -100,12 +110,12 @@ fi
 # the arduino has a routine which listens for the char r and resets 
 # the arduino with a delay of 1 seconds
 print "reset arduino ..." $ORANGE
-echo r > /dev/rfcomm0  
+echo r > $PORT
 sleep 1
 
 # initiate upload sequence with ino
 print "start upload ..." $ORANGE
-ino upload
+ino upload -p $PORT
 
 # check if upload process completed successfully
 let ERRORLEVEL=$?
@@ -120,12 +130,12 @@ sleep 1
 # if user specified option -s then start the serial monitor
 if $SERIAL; then
 	print "start serial monitor ..." $ORANGE
-	ino serial
+	ino serial -p $PORT
 fi
 
 # if option keep alive not set, close the connection again
 if ! $KEEP_ALIVE; then
-	sudo rfcomm release all > /dev/null
+	sudo rfcomm release $PORTNR > /dev/null
 	print "connection closed" $ORANGE
 fi
 

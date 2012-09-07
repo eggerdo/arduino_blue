@@ -6,6 +6,7 @@ GREEN="\033[38;5;46m"
 RED="\033[38;5;196m"
 
 KEEP_ALIVE=false
+PORTNR=0
 
 # print function, first parameter is the string, second parameter the colour.
 # colour is optional
@@ -25,6 +26,10 @@ function showUsage {
 	echo
 	echo -e "    -t <target>      specify the target either as the bluetooth"
 	echo -e "                     MAC address or the name of the device"
+	echo -e "    -p               define the port number on which the connection"
+	echo -e "                     should be established. default is 0"
+	echo -e "                     Note: only specify the number, e.g. 0 and not"
+	echo -e "                     /dev/rfcomm0"
 	echo -e "    -f               similar to -t but specify a file in which"
 	echo -e "                     the target is defined"
 	echo
@@ -37,10 +42,13 @@ function showUsage {
 hash ino 2>/dev/null || { print "FATAL: Ino required for execution. See http://inotool.org/  Aborting." $RED; exit 1; }
 
 # check for option arguments
-while getopts ":t:sf:k" optname; do
+while getopts ":t:sf:kp:" optname; do
 	case "$optname" in
 		"t")
 			TARGET=$OPTARG
+			;;
+		"p")
+			PORTNR=$OPTARG
 			;;
 		"f")
 			if [ -e "./$OPTARG" ]; then
@@ -55,7 +63,7 @@ while getopts ":t:sf:k" optname; do
 			exit
 			;;
 		*)
-			print "Unknown error while processing options" $RED
+			print "Unknown error while processing options, use -? for usage information" $RED
 	esac
 done
 
@@ -73,16 +81,18 @@ if [ -z $TARGET ]; then
 	fi
 fi
 
+PORT=/dev/rfcomm$PORTNR
+
 # connect to the robot
-. ./connect.sh $TARGET
+. ./connect.sh $TARGET $PORTNR
 
 # start serial monitor
 print "start serial monitor ..." $ORANGE
-ino serial
+ino serial -p $PORT
 
 # if option keep alive not set, close the connection again
 if ! $KEEP_ALIVE; then
-	sudo rfcomm release all > /dev/null
+	sudo rfcomm release $PORTNR 2>/dev/null
 	print "connection closed" $ORANGE
 fi
 

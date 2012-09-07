@@ -51,7 +51,7 @@ To avoid this problem, we make use of the open source command line tool [ino](ht
 
 # Scripts to make your life easy
 
-Based an all these modifications I made scripts which will let you easily upload a new sketch. Checkout the code from the repository. It includes an example sketch together with the skripts `scan.sh`, `connect.sh`, `upload.sh` and `serial.sh`. If you want to use your own sketch, use ino to init a new folder, copy your sketch in the src folder and the scripts in the root folder and add the above code to your program.
+Based an all these modifications I made scripts which will let you easily upload a new sketch. Checkout the code from the repository. It includes an example sketch together with the skripts `scan.sh`, `bind.sh`, `connect.sh`, `upload.sh` and `serial.sh`. If you want to use your own sketch, use ino to init a new folder, copy your sketch in the src folder and the scripts in the root folder and add the above code to your program.
 
 ## scan.sh
 
@@ -61,6 +61,10 @@ E.g.
 
 	./scan.sh
 	  00:06:66:45:B7:46    RN42-B746
+
+## bind.sh
+
+`bind.sh` pairs the Bluetooth Mate with the laptop (in case you haven't done that already) and is just added for the sake of completion. It expects the MAC address as a parameter.
 
 ## connect.sh
 

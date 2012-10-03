@@ -10,9 +10,13 @@ First thing you need to do is change the baud rate of the Bluetooth Mate to 5760
 
 Connect to the Bluetooth Mate using a serial monitor program. (Picocom is a good choice as we will use that later on). Once connected, put the Bluetooth Mate into command mode by sending `$$$` (needs to be done withing 60 seconds of power on). The Mate will answer with `CMD`. Then change the baud rate to 57600 by sending `SU57`. The Mate will answer with `OK`. By typing `D` you can confirm the settings.
 
-# Step 2: Arduino Reset circuit
+# Step 2: Arduino Reset
 
-In order to program the arduino, it has to be reset when the upload starts. To do this we first need to add a reset switch on the arduino board. Use a NPN transistor and connect it in the following way:
+In order to program the arduino, it has to be reset when the upload starts. To do this we can apply two solutions: Reset the arduino by hardware or reset by software. 
+
+## Hardware Reset
+
+To reset the Arduino by hardware we need to add a reset switch on the arduino board. Use a NPN transistor and connect it in the following way:
 
 ![Reset Switch on Breadboard](https://raw.github.com/eggerdo/arduino_blue/master/doc/reset_circuit.png)
 
@@ -22,6 +26,8 @@ In order to program the arduino, it has to be reset when the upload starts. To d
 
 With this ready we now need to put a piece of code in the arduino program that listens for a key on the bluetooth link and then then sets the chosen pin high to reset the board. In our case we use the char 'r' to reset the board:
 
+	#define RESET_PIN 5 // or set it to the pin you used
+	
 	int ReadSerialInput()
 	{
 	  int incomingByte = 0;
@@ -38,16 +44,49 @@ With this ready we now need to put a piece of code in the arduino program that l
 	void reset(int reset_delay) 
 	{
 	  delay(reset_delay * 1000);
-	  digitalWrite(bootpin, HIGH);
+	  digitalWrite(RESET_PIN, HIGH);
 	}
 
 Call the function `ReadSerialInput();` from your loop and don't forget to set `Serial.begin(57600);` in your setup routine. 
+
+## Software Reset
+
+To reset the Arduino by software only, we need to change the bootloader on the arduino. A tutorial how to do that can be found [here](https://github.com/eggerdo/arduino_blue/raw/master/doc/ArduinoSoftwareReset.pdf) and the bootloader we used is located in doc/bootloader.
+
+The code that needs to be added to the arduino program will look like this:
+
+	#include <avr/wdt.h>
+
+	int ReadSerialInput()
+	{
+	  int incomingByte = 0;
+	  
+	  incomingByte = Serial.read();
+
+	  switch (incomingByte) {
+	    case 'r':
+	      reset();
+	      break;
+	    }
+	}
+
+	void reset()
+	{
+	  Serial.println("Device will reset in 1 second ...");
+	  wdt_disable();
+	  wdt_enable(WDTO_1S);
+	  while (1) {}
+	}
+
+As before, call the function `ReadSerialInput();` from your loop and don't forget to set `Serial.begin(57600);` in your setup routine. 
 
 # Step 3: Upload Program
 
 The Arduino IDE seems to have serious problems with Bluetooth connections. Every time the Tools option menu is opened the IDE tries to open all the serial ports again wich fails because the IDE doesn't realise that the port is opened by itself.
 
 To avoid this problem, we make use of the open source command line tool [ino](http://inotool.org/). The sourcecode is available from https://github.com/amperka/ino
+
+If you are want to program with eclipse, you can find a tutorial [here](https://github.com/eggerdo/arduino_blue/raw/master/doc/ProgramArduinowithEclipse.pdf)
 
 # Scripts to make your life easy
 
@@ -85,6 +124,8 @@ If you include the option `-s` in the scripts call, the serial monitor is starte
 E.g.
 
 	./upload.sh -t RN42-B746 -s
+
+For more information on the available options, use the parameter `-h`.
 
 ## serial.sh
 

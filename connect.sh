@@ -22,29 +22,31 @@ if [ -z $1 ]; then
 fi
 
 if [ -z $2 ]; then
-	PORT=0
+	PORTNR=0
+else
+	PORTNR=$2
 fi
 
-print "connecting to $1 on rfcomm$2 ..." $ORANGE
+print "connecting to $1 on rfcomm$PORTNR ..." $ORANGE
 
 # check if we are connected already
-go_on=`rfcomm show $2 2>/dev/null | grep connected`
+go_on=`rfcomm show $PORTNR 2>/dev/null | grep connected`
 if [[ -z $go_on ]]; then
-	sudo rfcomm release $2 2>/dev/null
+	sudo rfcomm release $PORTNR 2>/dev/null
 
 	# start rfcomm connect in another shell
-	sudo rfcomm connect /dev/rfcomm$2 $1 > /dev/null &
+	sudo rfcomm connect /dev/rfcomm$PORTNR $1 > /dev/null &
 	
 	sleep 1
 	
 	# wait for connection to be established. wait at most 10 seconds
 	declare -i COUNTER
 	COUNTER=0
-	go_on=`rfcomm show $2 2>/dev/null | grep connected`
+	go_on=`rfcomm show $PORTNR 2>/dev/null | grep connected`
 	while [[ -z $go_on ]]; do
 		sleep 1
 	  let COUNTER=$COUNTER+1
-		go_on=`rfcomm show $2 2>/dev/null | grep connected`
+		go_on=`rfcomm show $PORTNR 2>/dev/null | grep connected`
 		if [ $COUNTER -eq 10 ]; then
 			print "connection failed!" $RED
 			exit 1

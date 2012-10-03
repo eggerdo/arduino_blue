@@ -42,7 +42,7 @@ function showUsage {
 hash ino 2>/dev/null || { print "FATAL: Ino required for execution. See http://inotool.org/  Aborting." $RED; exit 1; }
 
 # check for option arguments
-while getopts ":t:sf:kp:" optname; do
+while getopts ":t:sf:kp:h" optname; do
 	case "$optname" in
 		"t")
 			TARGET=$OPTARG
@@ -58,12 +58,12 @@ while getopts ":t:sf:kp:" optname; do
 		"k")
 			KEEP_ALIVE=true
 			;;
-		"?")
+		"h")
 			showUsage
 			exit
 			;;
 		*)
-			print "Unknown error while processing options, use -? for usage information" $RED
+			print "Unknown error while processing options, use -h for usage information" $RED
 	esac
 done
 
@@ -88,7 +88,7 @@ PORT=/dev/rfcomm$PORTNR
 
 # start serial monitor
 print "start serial monitor ..." $ORANGE
-ino serial -p $PORT
+ino serial -p $PORT -b 57600
 
 # if option keep alive not set, close the connection again
 if ! $KEEP_ALIVE; then

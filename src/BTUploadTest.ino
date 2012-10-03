@@ -1,3 +1,4 @@
+#include <avr/wdt.h>
 
 #define RESET_PIN 5
 
@@ -49,9 +50,10 @@ int ReadSerialInput()
 void reset(int reset_delay) 
 {
   Serial.println("Device will reset in " + 
-                 String(reset_delay) +
+                 String(1) +
                  " seconds ...");
-  delay(reset_delay * 1000);
-  digitalWrite(RESET_PIN, HIGH);
+  wdt_disable();
+  wdt_enable(WDTO_1S);
+  while (1) {}
 }
 
